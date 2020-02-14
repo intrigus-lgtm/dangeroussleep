@@ -4,11 +4,48 @@
 package dangeroussleep;
 
 public class App {
-    public String getGreeting() {
-        return "Hello world.";
-    }
+	static final int DEFAULT_RETRY_AFTER = 5;
+	static final int MAX_RETRY_AFTER = 10;
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-    }
+	public static void main(String[] args) {
+		badSleep(args);
+		goodSleep(args);
+	}
+
+	private static void badSleep(String[] args) {
+		int retryAfter = Integer.parseInt(args[0]);
+		try {
+			// wait for retry-after
+			Thread.sleep((long) retryAfter * 1000);
+		} catch (InterruptedException ignore) {
+			// ignore
+		}
+	}
+
+	private static void goodSleep(String[] args) {
+		int retryAfter = parseReplyAfter(args[0]);
+		try {
+			// wait for retry-after
+			Thread.sleep((long) retryAfter * 1000);
+		} catch (InterruptedException ignore) {
+			// ignore
+		}
+	}
+
+	private static int parseReplyAfter(String value) {
+		if (value == null || value.isEmpty()) {
+			return DEFAULT_RETRY_AFTER;
+		}
+		try {
+			int n = Integer.parseInt(value);
+			if (n < 0) {
+				return DEFAULT_RETRY_AFTER;
+			}
+			return Math.min(n, MAX_RETRY_AFTER);
+		} catch (NumberFormatException e) {
+			return DEFAULT_RETRY_AFTER;
+		}
+
+	}
+
 }
